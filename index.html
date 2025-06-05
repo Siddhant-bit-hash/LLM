@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Chat Interface</title> 
+    <title>AI Chatbot - Terminus Interface</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Roboto+Mono:wght@300;400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Roboto+Mono:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --primary-color: #00CFE8; /* Vivid Cyan */
@@ -16,561 +16,343 @@
             --text-light: #E6EDF3;
             --text-medium: #ADBAC7;
             --text-dark: #768390;
-            --border-color: rgba(173, 186, 199, 0.1);
-            --glow-primary: rgba(0, 207, 232, 0.6);
-            --glow-secondary: rgba(160, 32, 240, 0.5);
-            --error-color: #F87171; /* Red-400 for errors */
+            --border-color: rgba(173, 186, 199, 0.15); /* Faint border, slightly more visible */
+            --glow-primary-subtle: rgba(0, 207, 232, 0.3);
+            --glow-secondary-subtle: rgba(160, 32, 240, 0.25);
+            --card-bg: rgba(22, 27, 34, 0.85); /* Slightly more opaque card background */
         }
 
         body {
             font-family: 'Roboto', sans-serif;
             background-color: var(--bg-dark-primary);
             color: var(--text-light);
-            overflow-x: hidden;
             line-height: 1.6;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            padding: 1rem;
         }
 
-        #background-canvas { 
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-            pointer-events: none;
-        }
-
-        .chat-container { 
-            background-color: rgba(22, 27, 34, 0.85); 
-            backdrop-filter: blur(10px);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            width: 100%;
-            max-width: 700px;
-            height: 85vh;
-            max-height: 800px;
-            display: flex;
-            flex-direction: column;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3), 0 0 20px var(--glow-primary);
-            opacity: 0;
-            transform: translateY(20px) scale(0.98);
-            animation: popInContainer 0.7s ease-out 0.2s forwards;
-        }
-
-        @keyframes popInContainer {
-            to {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
-        }
-
-        .chat-header { 
-            padding: 1rem 1.5rem;
-            border-bottom: 1px solid var(--border-color);
-            text-align: center;
-        }
-
-        .chat-header h1 { 
-            font-family: 'Roboto Mono', monospace;
-            font-size: 1.5rem;
-            font-weight: 500;
-            color: var(--primary-color);
-            text-shadow: 0 0 10px var(--glow-primary);
-        }
-
-        .chat-messages { 
-            flex-grow: 1;
-            padding: 1.5rem;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-        }
-
-        .chat-messages::-webkit-scrollbar {
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
             width: 8px;
-        }
-        .chat-messages::-webkit-scrollbar-track {
-            background: rgba(0,0,0,0.1);
-            border-radius: 10px;
-        }
-        .chat-messages::-webkit-scrollbar-thumb {
-            background: var(--primary-color);
-            border-radius: 10px;
-            transition: background 0.3s ease;
-        }
-        .chat-messages::-webkit-scrollbar-thumb:hover {
-            background: var(--accent-color);
-        }
-
-        .message { 
-            padding: 0.75rem 1.25rem;
-            border-radius: 10px;
-            max-width: 80%;
-            word-wrap: break-word;
-            opacity: 0;
-            transform: translateY(10px);
-            animation: popInMessage 0.5s ease-out forwards;
-            line-height: 1.5;
-        }
-
-        @keyframes popInMessage { 
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .message.user { 
-            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
-            color: var(--bg-dark-primary);
-            align-self: flex-end;
-            margin-left: auto; 
-            border-bottom-right-radius: 2px;
-        }
-
-        .message.ai { 
-            background-color: var(--bg-dark-primary); 
-            color: var(--text-light);
-            align-self: flex-start;
-            border: 1px solid var(--border-color);
-            margin-right: auto; 
-            border-bottom-left-radius: 2px;
-        }
-        
-        .message.ai strong { color: var(--primary-color); }
-        .message.ai em { color: var(--accent-color); font-style: italic; }
-        .message.ai code {
-            font-family: 'Roboto Mono', monospace;
-            background-color: rgba(0,0,0,0.3); 
-            padding: 0.2em 0.5em;
-            border-radius: 4px;
-            font-size: 0.9em;
-            border: 1px solid var(--border-color);
-        }
-        .message.ai pre {
-            background-color: rgba(0,0,0,0.4); 
-            padding: 0.75rem;
-            border-radius: 6px;
-            overflow-x: auto;
-            margin: 0.5rem 0;
-            border: 1px solid var(--border-color);
-        }
-        .message.ai pre code {
-            background-color: transparent;
-            padding: 0;
-            font-size: 0.85em;
-            border: none;
-        }
-        /* Styles for sup/sub if needed, though browser defaults are usually fine */
-        .message.ai sup, .message.ai sub {
-            line-height: 0; /* Prevents affecting line height of surrounding text */
-            font-size: 0.8em; /* Slightly smaller */
-        }
-
-
-        .message.error { 
-            background-color: var(--error-color);
-            color: var(--bg-dark-primary);
-            align-self: flex-start;
-            font-weight: 500;
-        }
-        
-        .typing-indicator { 
-            align-self: flex-start;
-            margin-right: auto;
-            padding: 0.75rem 1.25rem;
-        }
-        .typing-indicator span {
             height: 8px;
-            width: 8px;
-            margin: 0 2px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-dark-primary);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary-color);
+            border-radius: 4px;
+            border: 2px solid var(--bg-dark-primary);
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--secondary-color);
+        }
+        
+        /* Chat container specific scrollbar */
+        #chat-container::-webkit-scrollbar-thumb {
+            background: var(--text-dark);
+        }
+         #chat-container::-webkit-scrollbar-thumb:hover {
+            background: var(--text-medium);
+        }
+
+
+        .user-message {
             background-color: var(--primary-color);
-            border-radius: 50%;
-            display: inline-block;
-            animation: bounceTyping 1.4s infinite ease-in-out both;
+            color: var(--bg-dark-primary); /* Darker text for better contrast on cyan */
+            font-weight: 500;
         }
-        .typing-indicator span:nth-child(1) { animation-delay: -0.32s; }
-        .typing-indicator span:nth-child(2) { animation-delay: -0.16s; }
-        @keyframes bounceTyping {
-            0%, 80%, 100% { transform: scale(0); }
-            40% { transform: scale(1.0); }
-        }
-
-        .chat-input-area { 
-            padding: 1rem 1.5rem;
-            border-top: 1px solid var(--border-color);
-            display: flex;
-            gap: 0.75rem;
-            background-color: rgba(13, 17, 23, 0.7); 
-            backdrop-filter: blur(5px);
+        .user-message::after { /* Optional: triangle speech bubble effect */
+            content: '';
+            position: absolute;
+            bottom: 0;
+            right: -8px;
+            width: 0;
+            height: 0;
+            border-top: 8px solid transparent;
+            border-bottom: 8px solid transparent;
+            border-left: 8px solid var(--primary-color);
         }
 
-        #chat-input { 
-            flex-grow: 1;
-            padding: 0.75rem 1rem;
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
-            background-color: var(--bg-dark-secondary);
+        .ai-message {
+            background-color: var(--card-bg);
             color: var(--text-light);
-            font-size: 0.95rem;
+            border: 1px solid var(--border-color);
+        }
+         .ai-message::before { /* Optional: triangle speech bubble effect */
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: -8px;
+            width: 0;
+            height: 0;
+            border-top: 8px solid transparent;
+            border-bottom: 8px solid transparent;
+            border-right: 8px solid var(--card-bg);
+        }
+
+
+        .message-bubble {
+            padding: 0.85rem 1.15rem; /* Slightly larger padding */
+            border-radius: 0.5rem; /* 8px */
+            max-width: 85%;
+            word-wrap: break-word;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            position: relative; /* For speech bubble triangle */
+            margin-bottom: 0.25rem; /* Space for triangle */
+        }
+
+        .loading-dots span {
+            background-color: var(--primary-color); /* Use primary color for dots */
+            animation: dotPulse 1.4s infinite ease-in-out both;
+        }
+        .loading-dots span:nth-child(1) { animation-delay: -0.32s; }
+        .loading-dots span:nth-child(2) { animation-delay: -0.16s; }
+        @keyframes dotPulse {
+            0%, 80%, 100% { transform: scale(0); opacity: 0.5; }
+            40% { transform: scale(1.0); opacity: 1; }
+        }
+
+        .error-message {
+            background-color: rgba(220, 53, 69, 0.15); /* Darker, subtle red */
+            color: #f87171; /* Lighter red text for dark theme */
+            border: 1px solid rgba(220, 53, 69, 0.5);
+        }
+
+        .chat-header {
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            font-family: 'Roboto Mono', monospace;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+        }
+
+        .chat-input-footer {
+            background-color: var(--bg-dark-secondary);
+            border-top: 1px solid var(--border-color);
+        }
+        
+        #user-input {
+            background-color: var(--bg-dark-primary);
+            border: 1px solid var(--border-color);
+            color: var(--text-light);
             transition: border-color 0.3s ease, box-shadow 0.3s ease;
         }
-
-        #chat-input:focus { 
-            outline: none;
+        #user-input:focus {
             border-color: var(--primary-color);
-            box-shadow: 0 0 10px var(--glow-primary);
+            box-shadow: 0 0 0 2px var(--glow-primary-subtle);
+            outline: none;
+        }
+        #user-input::placeholder {
+            color: var(--text-dark);
         }
 
-        #send-button { 
-            padding: 0.75rem 1.25rem;
-            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+        #send-button {
+            background-color: var(--primary-color);
             color: var(--bg-dark-primary);
             font-family: 'Roboto Mono', monospace;
             font-weight: 700;
-            border-radius: 8px;
-            border: none;
-            cursor: pointer;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-            letter-spacing: 0.5px;
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
         }
-
-        #send-button:hover { 
-            transform: translateY(-2px) scale(1.02);
-            box-shadow: 0 5px 15px var(--glow-primary);
+        #send-button:hover {
+            background-color: var(--secondary-color);
+            color: var(--text-light);
+            transform: translateY(-1px);
+            box-shadow: 0 0 10px var(--glow-secondary-subtle), 0 4px 8px rgba(0,0,0,0.3);
         }
-        #send-button:active { 
-            transform: translateY(0px) scale(1);
-        }
-        #send-button:disabled { 
-            opacity: 0.6;
+        #send-button:disabled {
+            background-color: var(--text-dark);
+            color: var(--text-medium);
             cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
+            opacity: 0.7;
+        }
+        .chat-window-container {
+             border: 1px solid var(--border-color);
+             box-shadow: 0 10px 30px rgba(0,0,0,0.3), 0 0 20px var(--glow-primary-subtle);
         }
 
-        @media (max-width: 768px) {
-            body {
-                padding: 0; 
-            }
-            .chat-container {
-                width: 100%;
-                height: 100vh; 
-                max-height: none; 
-                border-radius: 0; 
-                margin: 0;
-                box-shadow: none; 
-            }
-            .chat-header h1 {
-                font-size: 1.25rem;
-            }
-            .chat-messages {
-                padding: 1rem;
-            }
-            .message {
-                max-width: 90%;
-            }
-            .chat-input-area {
-                padding: 0.75rem;
-            }
-            #chat-input, #send-button {
-                padding: 0.6rem 1rem;
-                font-size: 0.9rem;
-            }
-        }
     </style>
 </head>
-<body>
-    <canvas id="background-canvas"></canvas> 
-    <div class="chat-container"> 
-        <div class="chat-header"> 
-            <h1>AI Chat Interface</h1> 
-        </div>
-        <div class="chat-messages" id="chat-messages"> 
-            <div class="message ai" style="animation-delay: 0.2s;"> 
-                Hello! I'm an AI assistant. How can I help you today?
+<body class="flex flex-col items-center justify-center min-h-screen p-4 selection:bg-primary-color selection:text-bg-dark-primary">
+
+    <div class="chat-window-container bg-bg-dark-primary shadow-xl rounded-lg w-full max-w-2xl flex flex-col h-[90vh] md:h-[85vh]">
+        <!-- Header -->
+        <header class="chat-header text-white p-4 rounded-t-lg">
+            <h1 class="text-xl sm:text-2xl font-semibold text-center">AI Chat Interface</h1>
+        </header>
+
+        <!-- Chat Container -->
+        <div id="chat-container" class="flex-grow p-4 sm:p-6 space-y-4 overflow-y-auto bg-bg-dark-secondary">
+            <!-- Initial AI Welcome Message -->
+            <div class="flex justify-start">
+                <div class="ai-message message-bubble">
+                    <p>System Online. I am your AI assistant. How may I interface with you today?</p>
+                </div>
             </div>
         </div>
-        <div id="typing-indicator-container" class="hidden px-4"> 
-            <div class="message ai typing-indicator" style="background-color: transparent; border: none; padding: 0.5rem 1.25rem;">
-                <span></span><span></span><span></span>
+
+        <!-- Loading Indicator (hidden by default) -->
+        <div id="loading-indicator" class="hidden p-4 flex justify-start bg-bg-dark-secondary">
+             <div class="ai-message message-bubble opacity-75">
+                <div class="loading-dots h-5 flex items-center space-x-1">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
             </div>
         </div>
-        <div class="chat-input-area"> 
-            <input type="text" id="chat-input" placeholder="Type your message here..." autocomplete="off"> 
-            <button id="send-button">SEND</button> 
-        </div>
+        
+        <!-- Message Input -->
+        <footer class="chat-input-footer p-3 sm:p-4 rounded-b-lg">
+            <div class="flex items-center space-x-2 sm:space-x-3">
+                <input type="text" id="user-input" placeholder="Initiate query..." class="flex-grow p-3 border rounded-md focus:ring-2 outline-none text-sm sm:text-base">
+                <button id="send-button" class="font-semibold py-3 px-5 sm:px-6 rounded-md shadow-md focus:outline-none focus:ring-2 focus:ring-opacity-50">
+                    SEND
+                </button>
+            </div>
+        </footer>
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const chatMessagesContainer = document.getElementById('chat-messages'); 
-            const chatInput = document.getElementById('chat-input');
-            const sendButton = document.getElementById('send-button');
-            const typingIndicatorContainer = document.getElementById('typing-indicator-container');
+        const chatContainer = document.getElementById('chat-container');
+        const userInput = document.getElementById('user-input');
+        const sendButton = document.getElementById('send-button');
+        const loadingIndicator = document.getElementById('loading-indicator');
 
-            // --- API Configuration ---
-            const OPENROUTER_API_URL = 'https://openrouter.ai/api/v1/chat/completions';
-            const OPENROUTER_API_KEY = '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'; 
+        // Stores the conversation history for the Gemini API
+        let chatHistory = [
+            // Initialize with system's persona and greeting for the API context
+            { role: "model", parts: [{ text: "System Online. I am your AI assistant. How may I interface with you today?" }] }
+        ];
 
-            let messageHistory = [{ role: "system", content: "You are a helpful AI assistant." }];
-
-            // --- Background Canvas Animation ---
-            const canvas = document.getElementById('background-canvas');
-            const ctx = canvas.getContext('2d');
-            let particlesArray = [];
-            let numberOfParticles; 
-
-            function setCanvasSize() {
-                canvas.width = window.innerWidth;
-                canvas.height = window.innerHeight;
-                numberOfParticles = window.innerWidth < 768 ? 30 : 70; 
-                initParticles(); 
-            }
+        // Function to add a message to the chat display
+        function addMessageToChat(message, sender) {
+            const messageWrapper = document.createElement('div');
+            messageWrapper.classList.add('flex', sender === 'user' ? 'justify-end' : 'justify-start');
             
-            class Particle {
-                constructor() {
-                    this.x = Math.random() * canvas.width;
-                    this.y = Math.random() * canvas.height;
-                    this.size = Math.random() * 1.5 + 0.5;
-                    this.speedX = (Math.random() * 0.4 - 0.2);
-                    this.speedY = (Math.random() * 0.4 - 0.2);
-                    const colorChoice = Math.random();
-                    if (colorChoice < 0.6) { 
-                        this.color = `rgba(0, 207, 232, ${Math.random() * 0.4 + 0.15})`; 
-                    } else if (colorChoice < 0.9) { 
-                        this.color = `rgba(160, 32, 240, ${Math.random() * 0.3 + 0.1})`;
-                    } else { 
-                         this.color = `rgba(247, 220, 111, ${Math.random() * 0.3 + 0.1})`;
-                    }
-                }
-                update() {
-                    this.x += this.speedX;
-                    this.y += this.speedY;
-                    if (this.size > 0.05) this.size -= 0.003;
-                    if (this.size <= 0.05 || this.x < -this.size || this.x > canvas.width + this.size || this.y < -this.size || this.y > canvas.height + this.size) {
-                        this.x = Math.random() * canvas.width;
-                        this.y = Math.random() * (canvas.height + 100) - 50; 
-                        this.size = Math.random() * 1.5 + 0.5;
-                        this.speedX = (Math.random() * 0.4 - 0.2);
-                        this.speedY = (Math.random() * 0.4 - 0.2);
-                    }
-                }
-                draw() {
-                    ctx.fillStyle = this.color;
-                    ctx.beginPath();
-                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                    ctx.fill();
-                }
-            }
-
-            function initParticles() {
-                particlesArray = [];
-                for (let i = 0; i < numberOfParticles; i++) {
-                    particlesArray.push(new Particle());
-                }
-            }
+            const bubbleDiv = document.createElement('div');
+            bubbleDiv.classList.add('message-bubble', sender === 'user' ? 'user-message' : 'ai-message');
             
-            function connectParticles() { 
-                let opacityValue = 1;
-                const maxConnectDistance = window.innerWidth < 768 ? 60 : 90;
-                for (let a = 0; a < particlesArray.length; a++) {
-                    for (let b = a + 1; b < particlesArray.length; b++) {
-                        let dx = particlesArray[a].x - particlesArray[b].x;
-                        let dy = particlesArray[a].y - particlesArray[b].y;
-                        let distance = Math.sqrt(dx * dx + dy * dy);
-                        if (distance < maxConnectDistance) {
-                            opacityValue = 1 - (distance / maxConnectDistance);
-                            ctx.strokeStyle = Math.random() > 0.5 ? 
-                                            `rgba(0, 207, 232, ${opacityValue * 0.2})` : 
-                                            `rgba(160, 32, 240, ${opacityValue * 0.15})`; 
-                            ctx.lineWidth = 0.5; 
-                            ctx.beginPath();
-                            ctx.moveTo(particlesArray[a].x, particlesArray[a].y);
-                            ctx.lineTo(particlesArray[b].x, particlesArray[b].y);
-                            ctx.stroke();
-                        }
-                    }
-                }
-            }
+            // Sanitize message to prevent XSS (though Gemini responses should be safe)
+            // For simplicity, converting common HTML chars. For robust sanitization, use a library.
+            const sanitizedMessage = message
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;")
+                .replace(/\n/g, "<br>"); // Convert newlines to <br> for display
 
-            function animateCanvas() {
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                for (let i = 0; i < particlesArray.length; i++) {
-                    particlesArray[i].update();
-                    particlesArray[i].draw();
-                }
-                connectParticles(); 
-                requestAnimationFrame(animateCanvas);
-            }
+            // If you want to support markdown, you would parse markdown to HTML here
+            // For example, using a simple regex for bold and italics:
+            // let formattedMessage = sanitizedMessage;
+            // formattedMessage = formattedMessage.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>'); // Bold
+            // formattedMessage = formattedMessage.replace(/\*(.*?)\*/g, '<em>$1</em>');       // Italics
+            // bubbleDiv.innerHTML = formattedMessage;
+            bubbleDiv.innerHTML = sanitizedMessage;
 
-            setCanvasSize(); 
-            animateCanvas(); 
-            window.addEventListener('resize', setCanvasSize); 
-            // --- End Background Canvas Animation ---
 
-            /**
-             * Adds a message bubble to the chat interface.
-             * @param {string} text - The message text.
-             * @param {string} sender - 'user' or 'ai'.
-             * @param {string} type - 'text' or 'error' (used for styling error messages).
-             */
-            function addMessageToChat(text, sender, type = 'text') {
-                const messageDiv = document.createElement('div');
-                messageDiv.classList.add('message', sender);
-                if (type === 'error') {
-                    messageDiv.classList.add('error');
-                }
+            messageWrapper.appendChild(bubbleDiv);
+            chatContainer.appendChild(messageWrapper);
+            chatContainer.scrollTop = chatContainer.scrollHeight; // Scroll to the bottom
+        }
 
-                let processedText = text; 
+        // Function to display an error message in the chat
+        function displayErrorMessage(message) {
+            const errorWrapper = document.createElement('div');
+            errorWrapper.classList.add('flex', 'justify-start');
 
-                if (sender === 'ai' && type !== 'error') {
-                    // 1. Process LaTeX-like expressions (both block and inline)
-                    processedText = processedText.replace(/\\\[([\s\S]*?)\\\]|\\\(([\s\S]*?)\\\)/g, (match, blockContent, inlineContent) => {
-                        let innerContent = blockContent || inlineContent; 
-                        if (!innerContent) return match; 
-
-                        let cleanedContent = innerContent;
-                        // General LaTeX command removal (order can matter)
-                        cleanedContent = cleanedContent.replace(/\\text\{(.*?)\}/g, '$1');
-                        cleanedContent = cleanedContent.replace(/\\(?:mathrm|mathbf|mathcal|mathfrak|mathbb|mathsf|mathtt|textit|boldsymbol)\{(.*?)\}/g, '$1');
-                        cleanedContent = cleanedContent.replace(/\\(?:quad|qquad|thinspace|enspace|thickspace|medspace|negthinspace|negmedspace|negthickspace| કામ)/g, ' ');
-                        cleanedContent = cleanedContent.replace(/\\,/g, ' ');
-                        
-                        // Specific math conversions to HTML entities or simpler text
-                        cleanedContent = cleanedContent.replace(/\\rightarrow/g, '&rarr;');
-                        cleanedContent = cleanedContent.replace(/\\cdot/g, '&middot;');
-                        cleanedContent = cleanedContent.replace(/\\times/g, '&times;');
-                        cleanedContent = cleanedContent.replace(/\\leq/g, '&le;');
-                        cleanedContent = cleanedContent.replace(/\\geq/g, '&ge;');
-                        cleanedContent = cleanedContent.replace(/\\neq/g, '&ne;');
-                        cleanedContent = cleanedContent.replace(/\\pm/g, '&plusmn;');
-                        cleanedContent = cleanedContent.replace(/\\alpha/g, '&alpha;');
-                        cleanedContent = cleanedContent.replace(/\\beta/g, '&beta;');
-                        cleanedContent = cleanedContent.replace(/\\gamma/g, '&gamma;');
-                        cleanedContent = cleanedContent.replace(/\\delta/g, '&delta;');
-                        cleanedContent = cleanedContent.replace(/\\epsilon/g, '&epsilon;');
-                        cleanedContent = cleanedContent.replace(/\\pi/g, '&pi;');
-                        // Add more greek letters or symbols as needed
-
-                        // Fractions: \frac{num}{den} to <sup>num</sup>&frasl;<sub>den</sub>
-                        cleanedContent = cleanedContent.replace(/\\frac\{(.*?)\}\{(.*?)\}/g, '<sup>$1</sup>&frasl;<sub>$2</sub>');
-                        
-                        // Superscripts: ^{...} or ^char
-                        cleanedContent = cleanedContent.replace(/\^\{([^}]+?)\}/g, '<sup>$1</sup>'); // Braced: x^{abc} -> x<sup>abc</sup>
-                        cleanedContent = cleanedContent.replace(/\^([a-zA-Z0-9]+)/g, '<sup>$1</sup>');    // Unbraced: x^2 -> x<sup>2</sup>, x^yz -> x<sup>yz</sup>
-                        
-                        // Subscripts: _{...} or _char
-                        cleanedContent = cleanedContent.replace(/_\{([^}]+?)\}/g, '<sub>$1</sub>'); // Braced: H_{2O} -> H<sub>2O</sub>
-                        cleanedContent = cleanedContent.replace(/_([a-zA-Z0-9]+)/g, '<sub>$1</sub>');    // Unbraced: H_2 -> H<sub>2</sub>, H_xy -> H<sub>xy</sub>
-                        
-                        // Remove any remaining single backslashes if they are not part of a known sequence
-                        cleanedContent = cleanedContent.replace(/\\(?![a-zA-Z{}([])/g, ''); 
-                        
-                        // Consolidate multiple spaces and trim
-                        cleanedContent = cleanedContent.replace(/\s+/g, ' ').trim();
-                        return cleanedContent; 
-                    });
-
-                    // 2. Then apply existing Markdown-like formatting to the processedText
-                    let formattedText = processedText
-                        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') // Bold
-                        .replace(/\*(.*?)\*/g, '<em>$1</em>')       // Italics
-                        .replace(/```(\w*\n)?([\s\S]*?)```/g, (match, lang, code) => {
-                            const languageClass = lang ? `language-${lang.trim()}` : '';
-                            // Escape HTML within code blocks
-                            const escapedCode = code.trim().replace(/</g, "&lt;").replace(/>/g, "&gt;");
-                            return `<pre><code class="${languageClass}">${escapedCode}</code></pre>`;
-                        })
-                        .replace(/`([^`]+?)`/g, (match, code) => `<code>${code.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</code>`)
-                        .replace(/\n/g, '<br>'); 
-                    messageDiv.innerHTML = formattedText;
-                } else {
-                    // For user messages or AI errors, just set textContent after basic processing for safety
-                    messageDiv.textContent = processedText; 
-                }
-
-                chatMessagesContainer.appendChild(messageDiv);
-                chatMessagesContainer.scrollTop = chatMessagesContainer.scrollHeight;
-                messageDiv.style.animationDelay = '0.01s'; 
-                setTimeout(() => messageDiv.style.animationDelay = '0s', 20);
-            }
+            const bubbleDiv = document.createElement('div');
+            bubbleDiv.classList.add('message-bubble', 'error-message');
             
-            async function sendMessage() {
-                const query = chatInput.value.trim();
-                if (!query) return;
+            const sanitizedMessage = message.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+            bubbleDiv.textContent = `System Alert: ${sanitizedMessage}`;
 
-                addMessageToChat(query, 'user');
-                messageHistory.push({ role: "user", content: query });
-                chatInput.value = '';
-                sendButton.disabled = true; 
-                typingIndicatorContainer.classList.remove('hidden'); 
-                chatMessagesContainer.scrollTop = chatMessagesContainer.scrollHeight;
+            errorWrapper.appendChild(bubbleDiv);
+            chatContainer.appendChild(errorWrapper);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
 
-                try {
-                    const response = await fetch(OPENROUTER_API_URL, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
-                        },
-                        body: JSON.stringify({
-                            model: 'deepseek/deepseek-chat', 
-                            messages: messageHistory,
-                            max_tokens: 1500, 
-                            temperature: 0.7, 
-                        })
-                    });
 
-                    if (!response.ok) {
+        // Function to handle sending a message
+        async function sendMessage() {
+            const userQuery = userInput.value.trim();
+            if (!userQuery) return;
+
+            addMessageToChat(userQuery, 'user');
+            userInput.value = ''; 
+            loadingIndicator.classList.remove('hidden');
+            userInput.disabled = true;
+            sendButton.disabled = true;
+
+            chatHistory.push({ role: "user", parts: [{ text: userQuery }] });
+
+            try {
+                const payload = {
+                    contents: chatHistory,
+                    // generationConfig: { temperature: 0.7, maxOutputTokens: 1024 } // Example config
+                };
+
+                const apiKey = ""; // Provided by Canvas environment for gemini-2.0-flash
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    let errorText = `API error: ${response.status}`;
+                    try {
                         const errorData = await response.json();
-                        console.error('API Error:', errorData);
-                        addMessageToChat(`Error: ${errorData.error?.message || response.statusText}`, 'ai', 'error');
-                        messageHistory.push({ role: "assistant", content: `Error: ${errorData.error?.message || response.statusText}` });
-                    } else {
-                        const data = await response.json();
-                        if (data.choices && data.choices.length > 0) {
-                            const botText = data.choices[0].message.content;
-                            addMessageToChat(botText, 'ai');
-                            messageHistory.push({ role: "assistant", content: botText });
-                        } else {
-                            addMessageToChat("Sorry, I couldn't get a valid response. Please try again.", 'ai', 'error');
-                            messageHistory.push({ role: "assistant", content: "No valid response." });
-                        }
+                        errorText += ` - ${errorData?.error?.message || 'Unknown API error structure'}`;
+                        console.error("API Error Data:", errorData);
+                    } catch (e) {
+                         errorText += ` - Could not parse error response.`;
                     }
-                } catch (error) {
-                    console.error('Network or other error:', error);
-                    addMessageToChat('Sorry, there was an issue connecting to the AI. Please check your connection.', 'ai', 'error');
-                    messageHistory.push({ role: "assistant", content: 'Connection error.' });
-                } finally {
-                    sendButton.disabled = false; 
-                    typingIndicatorContainer.classList.add('hidden'); 
-                    chatInput.focus();
-                    chatMessagesContainer.scrollTop = chatMessagesContainer.scrollHeight;
+                    throw new Error(errorText);
                 }
 
-                if (messageHistory.length > 12) { 
-                    messageHistory = [messageHistory[0]].concat(messageHistory.slice(-11));
+                const result = await response.json();
+                let aiResponseText = "No valid response from AI module. Please recalibrate and try again.";
+
+                if (result.candidates && result.candidates.length > 0 &&
+                    result.candidates[0].content && result.candidates[0].content.parts &&
+                    result.candidates[0].content.parts.length > 0) {
+                    aiResponseText = result.candidates[0].content.parts[0].text;
+                } else if (result.promptFeedback && result.promptFeedback.blockReason) {
+                     aiResponseText = `Query blocked: ${result.promptFeedback.blockReason}. Details: ${JSON.stringify(result.promptFeedback.safetyRatings)}`;
+                     console.warn("Prompt blocked:", result.promptFeedback);
+                } else {
+                    console.warn("Unexpected API response structure:", result);
                 }
+                
+                addMessageToChat(aiResponseText, 'ai');
+                chatHistory.push({ role: "model", parts: [{ text: aiResponseText }] });
+
+            } catch (error) {
+                console.error("Error processing query:", error);
+                displayErrorMessage(error.message || "Critical system malfunction. Unable to connect to AI core.");
+                // To prevent history desync on critical errors, consider not popping user message. 
+                // Or, allow user to resend. For now, history remains.
+            } finally {
+                loadingIndicator.classList.add('hidden');
+                userInput.disabled = false;
+                sendButton.disabled = false;
+                userInput.focus();
             }
+        }
 
-            sendButton.addEventListener('click', sendMessage);
-            chatInput.addEventListener('keypress', function(event) {
-                if (event.key === 'Enter' && !event.shiftKey) { 
-                    event.preventDefault(); 
-                    sendMessage();
-                }
-            });
-
-            chatInput.focus(); 
+        // Event listeners
+        sendButton.addEventListener('click', sendMessage);
+        userInput.addEventListener('keypress', function(event) {
+            if (event.key === 'Enter' && !event.shiftKey) { // Send on Enter, allow Shift+Enter for new line
+                event.preventDefault(); // Prevent default Enter behavior (like form submission or newline in some setups)
+                sendMessage();
+            }
         });
+
+        // Initial focus on the input field
+        userInput.focus();
+
     </script>
 </body>
 </html>
