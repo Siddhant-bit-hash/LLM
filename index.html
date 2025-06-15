@@ -216,11 +216,17 @@
         const sendButton = document.getElementById('send-button');
         const loadingIndicator = document.getElementById('loading-indicator');
 
-        // Stores the conversation history for the Gemini API
+        // Stores the conversation history for the API
         let chatHistory = [
-            // Initialize with system's persona and greeting for the API context
-            { role: "model", parts: [{ text: "System Online. I am your AI assistant. How may I interface with you today?" }] }
+             { "role": "system", "content": "You are a helpful assistant." },
+             { "role": "model", "content": "System Online. I am your AI assistant. How may I interface with you today?" }
         ];
+        
+        // --- API KEY & MODEL SETUP ---
+        const apiKey = "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";
+        // *** FIX: Updated to the exact model identifier from user's reference code.
+        const modelIdentifier = "qwen/qwen3-30b-a3b:free"; 
+
 
         // Function to add a message to the chat display
         function addMessageToChat(message, sender) {
@@ -230,22 +236,14 @@
             const bubbleDiv = document.createElement('div');
             bubbleDiv.classList.add('message-bubble', sender === 'user' ? 'user-message' : 'ai-message');
             
-            // Sanitize message to prevent XSS (though Gemini responses should be safe)
-            // For simplicity, converting common HTML chars. For robust sanitization, use a library.
             const sanitizedMessage = message
                 .replace(/&/g, "&amp;")
                 .replace(/</g, "&lt;")
                 .replace(/>/g, "&gt;")
                 .replace(/"/g, "&quot;")
                 .replace(/'/g, "&#039;")
-                .replace(/\n/g, "<br>"); // Convert newlines to <br> for display
+                .replace(/\n/g, "<br>");
 
-            // If you want to support markdown, you would parse markdown to HTML here
-            // For example, using a simple regex for bold and italics:
-            // let formattedMessage = sanitizedMessage;
-            // formattedMessage = formattedMessage.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>'); // Bold
-            // formattedMessage = formattedMessage.replace(/\*(.*?)\*/g, '<em>$1</em>');       // Italics
-            // bubbleDiv.innerHTML = formattedMessage;
             bubbleDiv.innerHTML = sanitizedMessage;
 
 
@@ -271,10 +269,15 @@
         }
 
 
-        // Function to handle sending a message
+        // Function to handle sending a message to OpenRouter
         async function sendMessage() {
             const userQuery = userInput.value.trim();
             if (!userQuery) return;
+            
+            if (!apiKey || !apiKey.startsWith("sk-or-v1-")) {
+                 displayErrorMessage("Invalid or missing OpenRouter API Key. Please check the 'apiKey' variable in the script.");
+                 return;
+            }
 
             addMessageToChat(userQuery, 'user');
             userInput.value = ''; 
@@ -282,21 +285,22 @@
             userInput.disabled = true;
             sendButton.disabled = true;
 
-            chatHistory.push({ role: "user", parts: [{ text: userQuery }] });
+            chatHistory.push({ role: "user", content: userQuery });
 
             try {
-                const payload = {
-                    contents: chatHistory,
-                    // generationConfig: { temperature: 0.7, maxOutputTokens: 1024 } // Example config
-                };
-
-                const apiKey = "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"; // Provided by Canvas environment for gemini-2.0-flash
-                const apiUrl = `https://openrouter.ai/api/v1`;
-
-                const response = await fetch(apiUrl, {
+                const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${apiKey}`,
+                        // *** FIX: Added required headers for OpenRouter
+                        'HTTP-Referer': `${location.protocol}//${location.host}`,
+                        'X-Title': document.title || 'AI Chat Interface'
+                    },
+                    body: JSON.stringify({
+                        model: modelIdentifier,
+                        messages: chatHistory
+                    })
                 });
 
                 if (!response.ok) {
@@ -314,25 +318,21 @@
                 const result = await response.json();
                 let aiResponseText = "No valid response from AI module. Please recalibrate and try again.";
 
-                if (result.candidates && result.candidates.length > 0 &&
-                    result.candidates[0].content && result.candidates[0].content.parts &&
-                    result.candidates[0].content.parts.length > 0) {
-                    aiResponseText = result.candidates[0].content.parts[0].text;
-                } else if (result.promptFeedback && result.promptFeedback.blockReason) {
-                     aiResponseText = `Query blocked: ${result.promptFeedback.blockReason}. Details: ${JSON.stringify(result.promptFeedback.safetyRatings)}`;
-                     console.warn("Prompt blocked:", result.promptFeedback);
+                if (result.choices && result.choices.length > 0 && result.choices[0].message && result.choices[0].message.content) {
+                    aiResponseText = result.choices[0].message.content;
                 } else {
                     console.warn("Unexpected API response structure:", result);
                 }
                 
                 addMessageToChat(aiResponseText, 'ai');
-                chatHistory.push({ role: "model", parts: [{ text: aiResponseText }] });
+                // The API expects "assistant" for the model's role in the history
+                chatHistory.push({ role: "assistant", content: aiResponseText });
 
             } catch (error) {
                 console.error("Error processing query:", error);
                 displayErrorMessage(error.message || "Critical system malfunction. Unable to connect to AI core.");
-                // To prevent history desync on critical errors, consider not popping user message. 
-                // Or, allow user to resend. For now, history remains.
+                // Remove the failed user message from history so it can be retried
+                chatHistory.pop();
             } finally {
                 loadingIndicator.classList.add('hidden');
                 userInput.disabled = false;
@@ -344,8 +344,8 @@
         // Event listeners
         sendButton.addEventListener('click', sendMessage);
         userInput.addEventListener('keypress', function(event) {
-            if (event.key === 'Enter' && !event.shiftKey) { // Send on Enter, allow Shift+Enter for new line
-                event.preventDefault(); // Prevent default Enter behavior (like form submission or newline in some setups)
+            if (event.key === 'Enter' && !event.shiftKey) { 
+                event.preventDefault(); 
                 sendMessage();
             }
         });
