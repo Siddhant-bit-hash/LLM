@@ -3,342 +3,380 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>श्री कृष्ण प्रश्नोत्तरी | Krishna Quiz</title>
+    <title>श्री कृष्ण प्रश्नोत्तरी | Lord Krishna Quiz</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Tiro+Devanagari+Hindi:wght@400&family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Tiro+Devanagari+Hindi:ital@0;1&family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
-        /* Custom styles for the quiz */
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: #FFF8E1; /* Light cream background */
+            font-family: 'Inter', 'Tiro Devanagari Hindi', sans-serif;
+            touch-action: manipulation; /* Improves touch responsiveness */
         }
         .hindi-font {
             font-family: 'Tiro Devanagari Hindi', serif;
         }
-        /* Peacock feather animation */
-        @keyframes sway {
-            0%, 100% { transform: rotate(-5deg); }
-            50% { transform: rotate(10deg); }
+        .quiz-card {
+            background-color: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
-        .peacock-feather {
-            animation: sway 8s ease-in-out infinite;
-            transform-origin: bottom right;
+        .option-btn {
+            transition: all 0.3s ease;
         }
-        /* Fade-in animation for questions */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .fade-in {
-            animation: fadeIn 0.6s ease-out;
-        }
-        /* Button pulse animation on hover */
         .option-btn:hover {
-            transform: scale(1.03);
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
         .correct {
-            background-color: #22c55e !important; /* Green-500 */
+            background-color: #22c55e !important; /* green-500 */
             color: white !important;
             transform: scale(1.05);
             border-color: #16a34a;
         }
         .incorrect {
-            background-color: #ef4444 !important; /* Red-500 */
+            background-color: #ef4444 !important; /* red-500 */
             color: white !important;
-            border-color: #dc2626;
+            animation: shake 0.5s;
         }
-        .disabled-options button {
-            pointer-events: none;
-            opacity: 0.8;
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-out forwards;
         }
     </style>
 </head>
-<body class="bg-[#FFF8E1] text-[#4A2311] min-h-screen flex items-center justify-center p-4">
-    <!-- Peacock Feather Decoration -->
-    <div class="absolute top-0 right-0 w-24 h-24 sm:w-32 sm:h-32 md:w-48 md:h-48 opacity-70 peacock-feather">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-            <path d="M50 100 C 70 70, 90 40, 90 20 A 40 40 0 0 0 10 20 C 10 40, 30 70, 50 100 Z" fill="#00796B"/>
-            <path d="M50 95 C 65 70, 80 45, 80 25 A 30 30 0 0 0 20 25 C 20 45, 35 70, 50 95 Z" fill="#009688"/>
-            <circle cx="50" cy="25" r="15" fill="#4CAF50"/>
-            <circle cx="50" cy="25" r="10" fill="#2196F3"/>
-            <circle cx="50" cy="25" r="5" fill="#1A237E"/>
-        </svg>
-    </div>
+<body class="bg-gradient-to-br from-cyan-300 via-blue-500 to-indigo-700 min-h-screen flex items-center justify-center p-4">
 
-    <div id="quiz-container" class="w-full max-w-2xl bg-white/70 backdrop-blur-sm rounded-2xl shadow-2xl p-6 md:p-8 border-4 border-[#FFA000]">
-        <!-- Quiz Header -->
-        <div class="text-center mb-6">
-            <h1 class="text-3xl md:text-4xl font-bold text-[#D84315] hindi-font">श्री कृष्ण प्रश्नोत्तरी</h1>
-            <p class="text-sm md:text-base text-[#BF360C] mt-1">भगवान श्री कृष्ण के बारे में अपने ज्ञान का परीक्षण करें</p>
-        </div>
-
-        <!-- Quiz Content Area -->
-        <div id="quiz-content">
-            <div id="question-area" class="mb-6">
-                <h2 id="question-text" class="text-xl md:text-2xl font-semibold hindi-font text-center min-h-[6rem] flex items-center justify-center"></h2>
+    <div id="quiz-container" class="w-full max-w-2xl mx-auto">
+        <div class="quiz-card p-6 sm:p-8 rounded-2xl shadow-2xl text-center text-white">
+            
+            <!-- Header -->
+            <div class="mb-6">
+                <h1 class="text-3xl sm:text-4xl font-bold hindi-font">श्री कृष्ण प्रश्नोत्तरी</h1>
+                <p class="text-blue-200 mt-2">देखें आपका ज्ञान कितना गहरा है!</p>
             </div>
-            <div id="options-container" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <!-- Options will be dynamically inserted here -->
-            </div>
-        </div>
 
-        <!-- Result Area -->
-        <div id="result-area" class="hidden text-center">
-             <h2 class="text-2xl md:text-3xl font-bold hindi-font text-[#D84315] mb-4">आपका परिणाम</h2>
-             <p id="score-text" class="text-lg md:text-xl hindi-font mb-6"></p>
-             <button id="restart-btn" class="bg-gradient-to-br from-[#FF9800] to-[#F57C00] text-white font-bold py-3 px-8 rounded-full shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 hindi-font">
-                फिर से शुरू करें
-            </button>
-        </div>
-
-        <!-- Progress Bar -->
-        <div class="mt-8">
-            <div class="w-full bg-orange-100 rounded-full h-2.5">
-                <div id="progress-bar" class="bg-gradient-to-r from-amber-500 to-orange-500 h-2.5 rounded-full transition-all duration-500" style="width: 0%"></div>
+            <!-- Question Area -->
+            <div id="question-area" class="fade-in">
+                <div class="flex justify-between items-center mb-4 text-lg">
+                    <span id="question-counter" class="font-semibold bg-white/20 px-3 py-1 rounded-lg">प्रश्न 1/15</span>
+                    <span id="score" class="font-semibold bg-white/20 px-3 py-1 rounded-lg">स्कोर: 0</span>
+                </div>
+                <p id="question-text" class="text-xl sm:text-2xl font-medium mb-6 min-h-[100px] hindi-font"></p>
+                <div id="options-container" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <!-- Options will be injected here by JS -->
+                </div>
             </div>
-            <p id="progress-text" class="text-center text-sm mt-2 text-[#BF360C]"></p>
+
+            <!-- Result Area -->
+            <div id="result-area" class="hidden fade-in">
+                 <h2 id="result-title" class="text-3xl font-bold mb-4 hindi-font">परिणाम</h2>
+                 <p id="result-text" class="text-2xl mb-2 hindi-font"></p>
+                 <p id="result-message" class="text-lg text-blue-200 mb-6"></p>
+                 <button onclick="restartQuiz()" class="w-full sm:w-auto bg-yellow-400 text-gray-800 font-bold py-3 px-8 rounded-lg text-lg hover:bg-yellow-300 transition-all duration-300 shadow-lg">
+                    पुनः प्रयास करें
+                 </button>
+            </div>
+
+            <!-- Navigation -->
+            <div class="mt-8">
+                <button id="next-btn" class="w-full sm:w-auto bg-white/90 text-blue-600 font-bold py-3 px-12 rounded-lg text-lg hover:bg-white transition-all duration-300 shadow-lg hidden">
+                    अगला
+                </button>
+            </div>
+
         </div>
+        <footer class="text-center text-white/70 mt-4 text-sm">
+            एक इंटरैक्टिव अनुभव
+        </footer>
     </div>
 
     <script>
-        // --- Quiz Data ---
-        // An array of objects, where each object represents a question.
-        const quizData = [
+        // --- Questions Data ---
+        // An array of 15 difficult questions about Lord Krishna in Hindi.
+        const quizQuestions = [
             {
-                question: "भगवान श्री कृष्ण का जन्म कहाँ हुआ था?",
-                options: ["गोकुल", "वृंदावन", "मथुरा", "द्वारका"],
-                answer: "मथुरा"
+                question: "भगवान कृष्ण के शंख का क्या नाम था, जिसे उन्होंने शंखासुर नामक राक्षस को मारकर प्राप्त किया था?",
+                options: [
+                    { text: "पांचजन्य", correct: true },
+                    { text: "देवदत्त", correct: false },
+                    { text: "सुघोष", correct: false },
+                    { text: "मणिपुष्पक", correct: false }
+                ]
             },
             {
-                question: "कृष्ण का पालन-पोषण करने वाले माता-पिता का नाम क्या था?",
-                options: ["देवकी और वासुदेव", "यशोदा और नंद", "रोहिणी और वासुदेव", "कुंती और पांडु"],
-                answer: "यशोदा और नंद"
+                question: "श्री कृष्ण और बलराम को 64 कलाओं का ज्ञान देने वाले गुरु का क्या नाम था?",
+                options: [
+                    { text: "द्रोणाचार्य", correct: false },
+                    { text: "कृपाचार्य", correct: false },
+                    { text: "सांदीपनि मुनि", correct: true },
+                    { text: "परशुराम", correct: false }
+                ]
             },
             {
-                question: "कृष्ण ने किस पर्वत को अपनी छोटी उंगली पर उठाकर ब्रजवासियों की रक्षा की थी?",
-                options: ["हिमालय पर्वत", "विंध्य पर्वत", "गोवर्धन पर्वत", "कैलाश पर्वत"],
-                answer: "गोवर्धन पर्वत"
+                question: "भगवान कृष्ण के उस दिव्य धनुष का क्या नाम था जो उन्हें वरुण देव से प्राप्त हुआ था?",
+                options: [
+                    { text: "पिनाक", correct: false },
+                    { text: "शारंग", correct: true },
+                    { text: "गाण्डीव", correct: false },
+                    { text: "विजय", correct: false }
+                ]
             },
             {
-                question: "भगवद् गीता का दिव्य उपदेश कृष्ण ने किसे दिया था?",
-                options: ["भीम", "अर्जुन", "युधिष्ठिर", "दुर्योधन"],
-                answer: "अर्जुन"
+                question: "उस एकमात्र कौरव का नाम बताइए जो महाभारत युद्ध में पांडवों की ओर से लड़ा था?",
+                options: [
+                    { text: "विकर्ण", correct: false },
+                    { text: "दुःशासन", correct: false },
+                    { text: "युयुत्सु", correct: true },
+                    { text: "चित्रसेन", correct: false }
+                ]
             },
             {
-                question: "कृष्ण के प्रिय सखा और भक्त कौन थे जो बहुत निर्धन थे?",
-                options: ["उद्धव", "अक्रूर", "सुदामा", "विदुर"],
-                answer: "सुदामा"
+                question: "भगवान कृष्ण की दिव्य तलवार का क्या नाम था?",
+                options: [
+                    { text: "चंद्रहास", correct: false },
+                    { text: "असि", correct: false },
+                    { text: "खड्ग", correct: false },
+                    { text: "नन्दक", correct: true }
+                ]
             },
             {
-                question: "कृष्ण के शंख का क्या नाम था?",
-                options: ["पांचजन्य", "देवदत्त", "पौंड्र", "अनंतविजय"],
-                answer: "पांचजन्य"
+                question: "महाभारत युद्ध में अर्जुन के अलावा, कृष्ण के अपने सारथी का क्या नाम था जो उनके रथ को द्वारका में चलाता था?",
+                options: [
+                    { text: "संजय", correct: false },
+                    { text: "सात्यकि", correct: false },
+                    { text: "दारुक", correct: true },
+                    { text: "कृतवर्मा", correct: false }
+                ]
             },
             {
-                question: "महाभारत के युद्ध में कृष्ण किसके सारथी बने थे?",
-                options: ["कर्ण", "भीष्म", "द्रोण", "अर्जुन"],
-                answer: "अर्जुन"
+                question: "गांधारी ने यदु वंश के विनाश का श्राप कृष्ण को क्यों दिया था?",
+                options: [
+                    { text: "क्योंकि उन्होंने दुर्योधन को मार दिया था", correct: false },
+                    { text: "क्योंकि वे युद्ध रोक सकते थे, पर रोका नहीं", correct: true },
+                    { text: "क्योंकि उन्होंने कर्ण का वध करवाया", correct: false },
+                    { text: "क्योंकि उन्होंने शकुनि को धोखा दिया", correct: false }
+                ]
             },
             {
-                question: "कृष्ण को 'माखन चोर' क्यों कहा जाता है?",
-                options: ["वे माखन बेचते थे", "वे माखन बनाते थे", "वे गोपियों का माखन चुराते थे", "उन्हें माखन पसंद नहीं था"],
-                answer: "वे गोपियों का माखन चुराते थे"
+                question: "उस शिकारी का क्या नाम था जिसके बाण से भगवान कृष्ण ने अपनी लीला समाप्त की?",
+                options: [
+                    { text: "अंगद", correct: false },
+                    { text: "जरा", correct: true },
+                    { text: "निषाद", correct: false },
+                    { text: "वालिया", correct: false }
+                ]
             },
             {
-                question: "कृष्ण ने किस विषैले नाग का दमन यमुना नदी में किया था?",
-                options: ["शेषनाग", "वासुकि", "कालिया नाग", "तक्षक"],
-                answer: "कालिया नाग"
+                question: "भागवत पुराण राजा परीक्षित को किसने सुनाया था?",
+                options: [
+                    { text: "वेद व्यास", correct: false },
+                    { text: "नारद मुनि", correct: false },
+                    { text: "शुकदेव गोस्वामी", correct: true },
+                    { text: "लोमहर्षण", correct: false }
+                ]
             },
             {
-                question: "कृष्ण की प्रेमिका के रूप में किसे जाना जाता है, जो उनकी दिव्य शक्ति का प्रतीक हैं?",
-                options: ["रुक्मिणी", "सत्यभामा", "राधा", "द्रौपदी"],
-                answer: "राधा"
+                question: "कृष्ण ने किस राक्षस का वध किया था जो बवंडर (चक्रवात) का रूप लेकर आया था?",
+                options: [
+                    { text: "बकासुर", correct: false },
+                    { text: "अघासुर", correct: false },
+                    { text: "पूतना", correct: false },
+                    { text: "तृणावर्त", correct: true }
+                ]
             },
             {
-                question: "कृष्ण की बहन का नाम क्या था, जिनका विवाह अर्जुन से हुआ?",
-                options: ["दुशाला", "सुभद्रा", "गांधारी", "हिडिम्बा"],
-                answer: "सुभद्रा"
+                question: "भगवान कृष्ण द्वारा स्थापित भव्य शहर द्वारका को जलमग्न होने से पहले किसने श्राप दिया था?",
+                options: [
+                    { text: "दुर्वासा ऋषि", correct: true },
+                    { text: "गांधारी", correct: false },
+                    { text: "विश्वामित्र", correct: false },
+                    { text: "नारद मुनि", correct: false }
+                ]
             },
             {
-                question: "कृष्ण का प्रिय वाद्य यंत्र क्या था?",
-                options: ["वीणा", "मृदंग", "सितार", "बांसुरी"],
-                answer: "बांसुरी"
+                question: "कृष्ण के पुत्र साम्ब ने किस ऋषि का अपमान किया था, जिसके कारण यदु वंश के विनाश की घटनाएँ शुरू हुईं?",
+                options: [
+                    { text: "कण्व", correct: false },
+                    { text: "विश्वामित्र", correct: false },
+                    { text: "दुर्वासा", correct: false },
+                    { text: "नारद और अन्य ऋषिगण", correct: true }
+                ]
             },
             {
-                question: "कृष्ण ने किस राक्षस का वध किया था जो एक बवंडर के रूप में आया था?",
-                options: ["पूतना", "बकासुर", "तृणावर्त", "अघासुर"],
-                answer: "तृणावर्त"
+                question: "भगवान कृष्ण की अष्टभार्या (आठ प्रमुख रानियों) में से कौन विदर्भ की राजकुमारी थीं?",
+                options: [
+                    { text: "सत्यभामा", correct: false },
+                    { text: "रुक्मिणी", correct: true },
+                    { text: "जाम्बवती", correct: false },
+                    { text: "कालिंदी", correct: false }
+                ]
             },
             {
-                question: "श्री कृष्ण के गुरु कौन थे जहाँ उन्होंने शिक्षा प्राप्त की?",
-                options: ["द्रोणाचार्य", "विश्वामित्र", "सांदीपनि मुनि", "परशुराम"],
-                answer: "सांदीपनि मुनि"
+                question: "कृष्ण ने नरकासुर का वध करके कितनी राजकुमारियों को उसकी कैद से मुक्त कराया था?",
+                options: [
+                    { text: "8,000", correct: false },
+                    { text: "12,000", correct: false },
+                    { text: "16,100", correct: true },
+                    { text: "1,008", correct: false }
+                ]
             },
             {
-                question: "कृष्ण के साम्राज्य की राजधानी का क्या नाम था?",
-                options: ["हस्तिनापुर", "इंद्रप्रस्थ", "मथुरा", "द्वारका"],
-                answer: "द्वारका"
-            },
-            {
-                question: "कृष्ण की मृत्यु का क्या कारण था?",
-                options: ["जरासंध से युद्ध", "एक शिकारी का तीर", "दुर्योधन का श्राप", "वृद्धावस्था"],
-                answer: "एक शिकारी का तीर"
+                question: "महाभारत के अनुसार, कृष्ण की बहन सुभद्रा का विवाह अर्जुन से हुआ था। सुभद्रा किसकी पुत्री थीं?",
+                options: [
+                    { text: "देवकी", correct: false },
+                    { text: "रोहिणी", correct: false },
+                    { text: "वसुदेव की एक और पत्नी", correct: false },
+                    { text: "वसुदेव और देवकी", correct: true }
+                ]
             }
         ];
 
         // --- DOM Elements ---
-        const quizContainer = document.getElementById('quiz-container');
-        const quizContent = document.getElementById('quiz-content');
         const questionArea = document.getElementById('question-area');
-        const questionText = document.getElementById('question-text');
-        const optionsContainer = document.getElementById('options-container');
         const resultArea = document.getElementById('result-area');
-        const scoreText = document.getElementById('score-text');
-        const restartBtn = document.getElementById('restart-btn');
-        const progressBar = document.getElementById('progress-bar');
-        const progressText = document.getElementById('progress-text');
-
-        // --- Quiz State ---
+        const questionCounterEl = document.getElementById('question-counter');
+        const scoreEl = document.getElementById('score');
+        const questionTextEl = document.getElementById('question-text');
+        const optionsContainerEl = document.getElementById('options-container');
+        const nextBtn = document.getElementById('next-btn');
+        
+        // --- State Variables ---
         let currentQuestionIndex = 0;
         let score = 0;
+        let shuffledQuestions = [];
 
         // --- Functions ---
 
         /**
-         * Shuffles the options of a question to make the quiz non-repetitive.
-         * @param {Array} array - The array of options to shuffle.
+         * Starts the quiz by shuffling questions and showing the first one.
          */
-        function shuffleArray(array) {
-            for (let i = array.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [array[i], array[j]] = [array[j], array[i]];
+        function startQuiz() {
+            // Shuffle the questions for a new experience each time
+            shuffledQuestions = quizQuestions.sort(() => Math.random() - 0.5);
+            currentQuestionIndex = 0;
+            score = 0;
+            resultArea.classList.add('hidden');
+            questionArea.classList.remove('hidden');
+            nextBtn.classList.add('hidden');
+            scoreEl.textContent = `स्कोर: 0`;
+            showQuestion();
+        }
+
+        /**
+         * Displays the current question and its options.
+         */
+        function showQuestion() {
+            resetState();
+            const currentQuestion = shuffledQuestions[currentQuestionIndex];
+            questionCounterEl.textContent = `प्रश्न ${currentQuestionIndex + 1}/${shuffledQuestions.length}`;
+            questionTextEl.textContent = currentQuestion.question;
+
+            // Create and append option buttons
+            currentQuestion.options.forEach(option => {
+                const button = document.createElement('button');
+                button.innerHTML = option.text;
+                button.classList.add('option-btn', 'w-full', 'p-4', 'border-2', 'border-white/50', 'rounded-lg', 'text-lg', 'hindi-font', 'bg-white/10');
+                button.dataset.correct = option.correct;
+                button.addEventListener('click', selectOption);
+                optionsContainerEl.appendChild(button);
+            });
+        }
+
+        /**
+         * Resets the state for the next question (clears options, hides next button).
+         */
+        function resetState() {
+            nextBtn.classList.add('hidden');
+            while (optionsContainerEl.firstChild) {
+                optionsContainerEl.removeChild(optionsContainerEl.firstChild);
             }
         }
 
         /**
-         * Loads the current question and its options onto the page.
+         * Handles the user's selection of an option.
+         * @param {Event} e - The click event.
          */
-        function loadQuiz() {
-            // Reset animations and styles
-            questionArea.classList.remove('fade-in');
-            
-            // Add a small delay for the animation to be noticeable
-            setTimeout(() => {
-                const currentQuestion = quizData[currentQuestionIndex];
-                questionText.innerText = currentQuestion.question;
-                optionsContainer.innerHTML = '';
-                optionsContainer.classList.remove('disabled-options');
-                
-                // Shuffle options before displaying
-                const shuffledOptions = [...currentQuestion.options];
-                shuffleArray(shuffledOptions);
-
-                shuffledOptions.forEach(option => {
-                    const button = document.createElement('button');
-                    button.innerText = option;
-                    button.classList.add('option-btn', 'w-full', 'p-3', 'md:p-4', 'hindi-font', 'text-base', 'md:text-lg', 'bg-white', 'rounded-lg', 'shadow-md', 'border-2', 'border-transparent', 'hover:border-amber-500', 'transition-all', 'duration-300');
-                    button.addEventListener('click', selectAnswer);
-                    optionsContainer.appendChild(button);
-                });
-                
-                questionArea.classList.add('fade-in');
-                updateProgress();
-            }, 100); // 100ms delay
-        }
-
-        /**
-         * Handles the user's answer selection.
-         * @param {Event} e - The click event from the option button.
-         */
-        function selectAnswer(e) {
+        function selectOption(e) {
             const selectedBtn = e.target;
-            const correctAnswer = quizData[currentQuestionIndex].answer;
+            const isCorrect = selectedBtn.dataset.correct === 'true';
 
-            optionsContainer.classList.add('disabled-options'); // Disable other buttons
-
-            if (selectedBtn.innerText === correctAnswer) {
+            if (isCorrect) {
                 score++;
-                selectedBtn.classList.add('correct');
-            } else {
-                selectedBtn.classList.add('incorrect');
-                // Highlight the correct answer
-                Array.from(optionsContainer.children).forEach(button => {
-                    if (button.innerText === correctAnswer) {
-                        button.classList.add('correct');
-                    }
-                });
+                scoreEl.textContent = `स्कोर: ${score}`;
             }
 
-            // Move to the next question after a delay
-            setTimeout(() => {
-                currentQuestionIndex++;
-                if (currentQuestionIndex < quizData.length) {
-                    loadQuiz();
+            // Provide visual feedback for all options
+            Array.from(optionsContainerEl.children).forEach(button => {
+                if (button.dataset.correct === 'true') {
+                    button.classList.add('correct');
                 } else {
-                    showResults();
+                    button.classList.add('incorrect');
                 }
-            }, 2000); // 2-second delay to show feedback
+                button.disabled = true; // Disable all buttons after selection
+            });
+            
+            // Show the next button
+            if (shuffledQuestions.length > currentQuestionIndex + 1) {
+                nextBtn.classList.remove('hidden');
+            } else {
+                // If it's the last question, show the results
+                setTimeout(showResults, 1000); 
+            }
         }
-
-        /**
-         * Updates the progress bar and text.
-         */
-        function updateProgress() {
-            const progressPercentage = ((currentQuestionIndex) / quizData.length) * 100;
-            progressBar.style.width = `${progressPercentage}%`;
-            progressText.innerText = `प्रश्न ${currentQuestionIndex + 1} / ${quizData.length}`;
-        }
-
+        
         /**
          * Displays the final results of the quiz.
          */
         function showResults() {
-            quizContent.classList.add('hidden');
+            questionArea.classList.add('hidden');
+            nextBtn.classList.add('hidden');
             resultArea.classList.remove('hidden');
-            resultArea.classList.add('fade-in');
             
-            const finalScoreText = `आपने ${quizData.length} में से ${score} प्रश्नों के सही उत्तर दिए।`;
-            let message = "";
-            const percentage = (score / quizData.length) * 100;
+            const resultTitle = document.getElementById('result-title');
+            const resultText = document.getElementById('result-text');
+            const resultMessage = document.getElementById('result-message');
 
-            if (percentage === 100) {
-                message = "उत्कृष्ट! आप श्री कृष्ण के सच्चे भक्त हैं। जय श्री कृष्ण!";
-            } else if (percentage >= 70) {
-                message = "बहुत बढ़िया! आपका ज्ञान सराहनीय है।";
-            } else if (percentage >= 40) {
-                message = "अच्छा प्रयास! थोड़ा और पढ़ें और फिर प्रयास करें।";
+            resultText.textContent = `आपने ${shuffledQuestions.length} में से ${score} प्रश्नों के सही उत्तर दिए।`;
+
+            if (score > 12) {
+                resultTitle.textContent = "अद्भुत! �👏👏";
+                resultMessage.textContent = "आपका ज्ञान वास्तव में असाधारण है। आप श्री कृष्ण के सच्चे भक्त हैं।";
+            } else if (score > 7) {
+                resultTitle.textContent = "बहुत अच्छा! 👍";
+                resultMessage.textContent = "आपका ज्ञान बहुत अच्छा है, लेकिन अभी भी जानने के लिए बहुत कुछ है।";
             } else {
-                message = "कोई बात नहीं, पुनः प्रयास करें। ज्ञान बढ़ाना ही लक्ष्य है।";
+                resultTitle.textContent = "प्रयास करते रहें! 🙏";
+                resultMessage.textContent = "यह एक कठिन प्रश्नोत्तरी थी। लीलाओं का अध्ययन जारी रखें, ज्ञान अवश्य बढ़ेगा।";
             }
-
-            scoreText.innerHTML = `${finalScoreText}<br><br>${message}`;
-            
-            // Final progress update
-            progressBar.style.width = '100%';
-            progressText.innerText = `प्रश्नोत्तरी पूर्ण!`;
         }
-
+        
         /**
-         * Resets the quiz to its initial state.
+         * Restarts the quiz from the beginning.
          */
         function restartQuiz() {
-            currentQuestionIndex = 0;
-            score = 0;
-            resultArea.classList.add('hidden');
-            quizContent.classList.remove('hidden');
-            loadQuiz();
+            startQuiz();
         }
 
         // --- Event Listeners ---
-        restartBtn.addEventListener('click', restartQuiz);
+        nextBtn.addEventListener('click', () => {
+            currentQuestionIndex++;
+            showQuestion();
+        });
 
-        // --- Initial Load ---
-        // Shuffle the entire quiz question order for replayability
-        shuffleArray(quizData);
-        loadQuiz();
+        // --- Initial Call ---
+        // Start the quiz when the page loads.
+        document.addEventListener('DOMContentLoaded', startQuiz);
+
     </script>
 </body>
 </html>
+�
