@@ -1,382 +1,269 @@
 <!DOCTYPE html>
-<html lang="hi">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>श्री कृष्ण प्रश्नोत्तरी | Lord Krishna Quiz</title>
+    <title>ML Engineer Resume - Siddhant Bashisth</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Tiro+Devanagari+Hindi:ital@0;1&family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
+        /* A4 paper size for preview and print */
+        @media screen {
+            body {
+                background-color: #e0e0e0;
+            }
+            .a4-container {
+                width: 210mm;
+                height: 297mm;
+                margin: 20px auto;
+                transform-origin: top center;
+                transform: scale(0.8);
+            }
+        }
+
+        @media print {
+            body {
+                margin: 0;
+                padding: 0;
+                background-color: #fff;
+            }
+            .a4-container {
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+                box-shadow: none;
+                transform: none;
+            }
+            .print-no-bg {
+                background-color: transparent !important;
+            }
+            .print-text-black {
+                color: #000 !important;
+            }
+             .print-border-black {
+                border-color: #ccc !important;
+            }
+        }
+        
+        /* Custom font and theme colors */
+        :root {
+            --bg-main: #ffffff;
+            --bg-secondary: #f8f9fa;
+            --border-color: #dee2e6;
+            --text-main: #212529;
+            --text-secondary: #495057;
+            --accent-main: #0d6efd;
+            --accent-dark: #0a58ca;
+        }
+
         body {
-            font-family: 'Inter', 'Tiro Devanagari Hindi', sans-serif;
-            touch-action: manipulation; /* Improves touch responsiveness */
+            font-family: 'Inter', sans-serif;
         }
-        .hindi-font {
-            font-family: 'Tiro Devanagari Hindi', serif;
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
         }
-        .quiz-card {
-            background-color: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+
+        .code-font {
+            font-family: 'Roboto Mono', monospace;
         }
-        .option-btn {
+        
+        /* Gradient glow effect for headings */
+        .glow-text {
+            color: var(--accent-main);
+            text-shadow: 0 0 8px rgba(13, 110, 253, 0.25);
+        }
+
+        /* Section header styling */
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 0.75rem;
+            color: var(--accent-main);
+        }
+        .section-header::after {
+            content: '';
+            flex-grow: 1;
+            height: 1px;
+            background: linear-gradient(to right, var(--border-color), transparent);
+        }
+
+        /* Skill visualization */
+        .skill-bar {
+            background-color: #e9ecef;
+            border-radius: 9999px;
+            height: 6px;
+            overflow: hidden;
+        }
+        .skill-progress {
+            background: linear-gradient(90deg, var(--accent-dark) 0%, var(--accent-main) 100%);
+            height: 100%;
+            border-radius: 9999px;
+        }
+
+        /* Project card styling */
+        .project-card {
+            border: 1px solid var(--border-color);
             transition: all 0.3s ease;
         }
-        .option-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        .project-card:hover {
+            border-color: var(--accent-main);
+            box-shadow: 0 4px 15px rgba(13, 110, 253, 0.1);
+            transform: translateY(-4px);
         }
-        .correct {
-            background-color: #22c55e !important; /* green-500 */
-            color: white !important;
-            transform: scale(1.05);
-            border-color: #16a34a;
-        }
-        .incorrect {
-            background-color: #ef4444 !important; /* red-500 */
-            color: white !important;
-            animation: shake 0.5s;
-        }
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-5px); }
-            75% { transform: translateX(5px); }
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .fade-in {
-            animation: fadeIn 0.5s ease-out forwards;
-        }
+
     </style>
 </head>
-<body class="bg-gradient-to-br from-cyan-300 via-blue-500 to-indigo-700 min-h-screen flex items-center justify-center p-4">
+<body class="bg-gray-200">
 
-    <div id="quiz-container" class="w-full max-w-2xl mx-auto">
-        <div class="quiz-card p-6 sm:p-8 rounded-2xl shadow-2xl text-center text-white">
+    <div class="a4-container bg-white shadow-lg flex print-no-bg">
+        <!-- Main Resume Content -->
+        <main class="w-full h-full flex flex-col bg-white text-[#212529] p-7">
             
-            <!-- Header -->
-            <div class="mb-6">
-                <h1 class="text-3xl sm:text-4xl font-bold hindi-font">श्री कृष्ण प्रश्नोत्तरी</h1>
-                <p class="text-blue-200 mt-2">देखें आपका ज्ञान कितना गहरा है!</p>
-            </div>
+            <!-- Header: Your Name and Title -->
+            <header class="text-center border-b pb-4 mb-4 border-[#dee2e6]">
+                <h1 class="text-4xl font-bold tracking-tight text-[#212529]">Siddhant Bashisth</h1>
+                <h2 class="text-lg mt-1 font-light tracking-wider glow-text">Aspiring Machine Learning Engineer</h2>
+            </header>
+            
+            <div class="flex flex-grow gap-6">
+                <!-- Left Column: Contact, Skills, Education -->
+                <aside class="w-1/3 flex flex-col gap-5">
+                    
+                    <!-- Section: API Endpoint / Contact -->
+                    <section>
+                        <h3 class="section-header code-font text-base">// API Endpoint</h3>
+                        <div class="space-y-2 text-sm text-[#495057]">
+                            <div class="flex items-center gap-3">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-envelope" viewBox="0 0 16 16"><path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V4zm2-1a1 1 0 0 0-1 1v.217l7 4.2 7-4.2V4a1 1 0 0 0-1-1H2zm13 2.383-4.758 2.855L15 11.114V5.383zM1 5.383l4.758 2.855L1 11.114V5.383zm5.5 3.332L1 11.383V12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-.617l-5.5-3.333z"/></svg>
+                                <span>siddhantbashisth@gmail.com</span>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-telephone" viewBox="0 0 16 16"><path d="M3.654 1.328a.678.678 0 0 0-1.015-.063L1.605 2.3c-.483.484-.661 1.169-.45 1.77a17.568 17.568 0 0 0 4.168 6.608 17.569 17.569 0 0 0 6.608 4.168c.601.211 1.286.033 1.77-.45l1.034-1.034a.678.678 0 0 0-.063-1.015l-2.307-1.794a.678.678 0 0 0-.58-.122l-2.19.547a1.745 1.745 0 0 1-1.657-.459L5.482 8.062a1.745 1.745 0 0 1-.46-1.657l.548-2.19a.678.678 0 0 0-.122-.58L3.654 1.328zM1.884.511a1.745 1.745 0 0 1 2.612.163L6.29 2.98c.329.423.445.974.315 1.494l-.547 2.19a.678.678 0 0 0 .178.643l2.457 2.457a.678.678 0 0 0 .644.178l2.189-.547a1.745 1.745 0 0 1 1.494.315l2.306 1.794c.829.645.905 1.87.163 2.611l-1.034 1.034c-.74.74-1.846 1.065-2.877.702a18.634 18.634 0 0 1-7.01-4.42 18.634 18.634 0 0 1-4.42-7.009c-.362-1.03-.037-2.137.703-2.877L1.885.511z"/></svg>
+                                <span>6262910920</span>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-linkedin" viewBox="0 0 16 16"><path d="M0 1.146C0 .513.526 0 1.175 0h13.65C15.474 0 16 .513 16 1.146v13.708c0 .633-.526 1.146-1.175 1.146H1.175C.526 16 0 15.487 0 14.854V1.146zm4.943 12.248V6.169H2.542v7.225h2.401zm-1.2-8.212c.837 0 1.358-.554 1.358-1.248-.015-.709-.52-1.248-1.342-1.248-.822 0-1.359.54-1.359 1.248 0 .694.521 1.248 1.327 1.248h.016zm4.908 8.212V9.359c0-.216.016-.432.08-.586.173-.431.568-.878 1.232-.878.869 0 1.216.662 1.216 1.634v3.865h2.401V9.25c0-2.22-1.184-3.252-2.764-3.252-1.274 0-1.845.7-2.165 1.193v.025h-.016a5.54 5.54 0 0 1 .016-.025V6.169h-2.4c.03.678 0 7.225 0 7.225h2.4z"/></svg>
+                                <span>linkedin.com/in/siddhant-bashisth-033bb6179/</span>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-github" viewBox="0 0 16 16"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
+                                <span>github.com/Siddhant-bit-hash</span>
+                            </div>
+                        </div>
+                    </section>
+                    
+                    <!-- Section: Core Features / Skills -->
+                    <section>
+                        <h3 class="section-header code-font text-base">// Core Features</h3>
+                        <div class="space-y-3 text-sm">
+                            <div>
+                                <h4 class="font-semibold mb-1 text-[#212529]">Programming Languages</h4>
+                                <div class="skill-bar"><div class="skill-progress" style="width: 95%;"></div></div>
+                                <p class="text-xs text-[#495057] mt-1">Python</p>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold mb-1 text-[#212529]">ML/DL Frameworks</h4>
+                                <div class="skill-bar"><div class="skill-progress" style="width: 90%;"></div></div>
+                                <p class="text-xs text-[#495057] mt-1">TensorFlow, Scikit-learn, Keras</p>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold mb-1 text-[#212529]">Data Science & Viz</h4>
+                                <div class="skill-bar"><div class="skill-progress" style="width: 85%;"></div></div>
+                                <p class="text-xs text-[#495057] mt-1">Pandas, NumPy, Matplotlib, Seaborn</p>
+                            </div>
+                             <div>
+                                <h4 class="font-semibold mb-1 text-[#212529]">Tools & Platforms</h4>
+                                <div class="skill-bar"><div class="skill-progress" style="width: 80%;"></div></div>
+                                <p class="text-xs text-[#495057] mt-1">Jupyter, Google Colab</p>
+                            </div>
+                        </div>
+                    </section>
+                    
+                    <!-- Section: Training Data / Education -->
+                    <section>
+                        <h3 class="section-header code-font text-base">// Training Data</h3>
+                        <div class="text-sm">
+                            <h4 class="font-bold text-base text-[#212529]">Institute of Engineering and Science, IPS Academy</h4>
+                            <p class="text-[#495057]">Indore, Madhya Pradesh</p>
+                            <p class="mt-1 text-[#212529]">B.Tech in Computer Science & Engineering</p>
+                            <p class="text-xs text-[#495057]">Expected Graduation: 2026</p>
+                        </div>
+                    </section>
+                </aside>
 
-            <!-- Question Area -->
-            <div id="question-area" class="fade-in">
-                <div class="flex justify-between items-center mb-4 text-lg">
-                    <span id="question-counter" class="font-semibold bg-white/20 px-3 py-1 rounded-lg">प्रश्न 1/15</span>
-                    <span id="score" class="font-semibold bg-white/20 px-3 py-1 rounded-lg">स्कोर: 0</span>
-                </div>
-                <p id="question-text" class="text-xl sm:text-2xl font-medium mb-6 min-h-[100px] hindi-font"></p>
-                <div id="options-container" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <!-- Options will be injected here by JS -->
-                </div>
-            </div>
+                <!-- Right Column: Summary, Projects, Experience -->
+                <main class="w-2/3 flex flex-col gap-5">
+                    <!-- Section: Learning Objective / Summary -->
+                    <section>
+                        <h3 class="section-header code-font text-base">// Learning Objective</h3>
+                        <p class="text-sm leading-relaxed text-[#495057]">
+                            Motivated and detail-oriented Computer Science student with a strong foundation in machine learning algorithms, data structures, and software development principles. Seeking a fresher role to apply practical skills from academic projects to solve complex, real-world challenges and contribute to a forward-thinking organization.
+                        </p>
+                    </section>
 
-            <!-- Result Area -->
-            <div id="result-area" class="hidden fade-in">
-                 <h2 id="result-title" class="text-3xl font-bold mb-4 hindi-font">परिणाम</h2>
-                 <p id="result-text" class="text-2xl mb-2 hindi-font"></p>
-                 <p id="result-message" class="text-lg text-blue-200 mb-6"></p>
-                 <button onclick="restartQuiz()" class="w-full sm:w-auto bg-yellow-400 text-gray-800 font-bold py-3 px-8 rounded-lg text-lg hover:bg-yellow-300 transition-all duration-300 shadow-lg">
-                    पुनः प्रयास करें
-                 </button>
-            </div>
+                    <!-- Section: Deployed Models / Projects -->
+                    <section>
+                        <h3 class="section-header code-font text-base">// Deployed Models</h3>
+                        <div class="space-y-3">
+                            <!-- Project 1 -->
+                            <div class="project-card p-3 rounded-lg bg-[#f8f9fa] border border-[#e9ecef]">
+                                <h4 class="font-bold text-base text-[#212529]">GAN-Based Data Augmentation for Image Classification</h4>
+                                <p class="text-sm mt-1 leading-relaxed text-[#495057]">
+                                    Boosted classifier accuracy by up to 29% on small datasets (from 64.1% to 82.7%) as measured by performance on the standard MNIST test set by building and training Generative Adversarial Networks (GANs) from scratch to augment limited training datasets with synthetic images.
+                                </p>
+                                <div class="flex flex-wrap gap-2 items-center mt-2">
+                                    <span class="code-font text-xs bg-[#e9ecef] text-[#495057] px-2 py-1 rounded">TensorFlow</span>
+                                    <span class="code-font text-xs bg-[#e9ecef] text-[#495057] px-2 py-1 rounded">GAN</span>
+                                    <span class="code-font text-xs bg-[#e9ecef] text-[#495057] px-2 py-1 rounded">NumPy</span>
+                                    <span class="code-font text-xs bg-[#e9ecef] text-[#495057] px-2 py-1 rounded">Data Augmentation</span>
+                                    <a href="https://github.com/Siddhant-bit-hash/GAN-Based-Data-Augmentation-for-Image-Classification/tree/main" target="_blank" rel="noopener noreferrer" class="flex items-center gap-1.5 code-font text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded hover:bg-blue-200 transition-colors">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-github" viewBox="0 0 16 16"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
+                                        Source Code
+                                    </a>
+                                </div>
+                            </div>
+                            <!-- Project 2 -->
+                            <div class="project-card p-3 rounded-lg bg-[#f8f9fa] border border-[#e9ecef]">
+                                <h4 class="font-bold text-base text-[#212529]">Time-Series Forecasting for Cloud CPU Usage</h4>
+                                <p class="text-sm mt-1 mb-2 leading-relaxed text-[#495057]">
+                                    Reduced short-term CPU usage forecast error by 79% as measured by Mean Absolute Error (MAE) against a naive baseline model by developing and evaluating Long Short-Term Memory (LSTM) and SARIMA models on real-world Microsoft Azure cluster data.
+                                </p>
+                                <div class="flex flex-wrap gap-2 items-center mt-2">
+                                    <span class="code-font text-xs bg-[#e9ecef] text-[#495057] px-2 py-1 rounded">LSTM</span>
+                                    <span class="code-font text-xs bg-[#e9ecef] text-[#495057] px-2 py-1 rounded">SARIMA</span>
+                                    <span class="code-font text-xs bg-[#e9ecef] text-[#495057] px-2 py-1 rounded">Time Series</span>
+                                    <span class="code-font text-xs bg-[#e9ecef] text-[#495057] px-2 py-1 rounded">Forecasting</span>
+                                    <a href="https://github.com/Siddhant-bit-hash/Time-Series-Forecasting-for-Cloud-CPU-Usage" target="_blank" rel="noopener noreferrer" class="flex items-center gap-1.5 code-font text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded hover:bg-blue-200 transition-colors">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-github" viewBox="0 0 16 16"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
+                                        Source Code
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
 
-            <!-- Navigation -->
-            <div class="mt-8">
-                <button id="next-btn" class="w-full sm:w-auto bg-white/90 text-blue-600 font-bold py-3 px-12 rounded-lg text-lg hover:bg-white transition-all duration-300 shadow-lg hidden">
-                    अगला
-                </button>
+                    <!-- Section: Fine-Tuning / Experience -->
+                    <section>
+                        <h3 class="section-header code-font text-base">// Fine-Tuning</h3>
+                        <div class="text-sm">
+                            <ul class="list-disc list-outside pl-5 space-y-1.5 text-[#495057]">
+                                <li>Achieved a 1900+ competitive programming rating on LeetCode, demonstrating strong algorithmic problem-solving skills.</li>
+                                <li>Awarded Bronze Medalist (Top 5%) in the Kaggle JPX Tokyo Stock Exchange Prediction competition.</li>
+                                <li>Certified in Problem Solving (Intermediate) by HackerRank, validating algorithmic proficiency.</li>
+                            </ul>
+                        </div>
+                    </section>
+                </main>
             </div>
-
-        </div>
-        <footer class="text-center text-white/70 mt-4 text-sm">
-            एक इंटरैक्टिव अनुभव
-        </footer>
+        </main>
     </div>
 
-    <script>
-        // --- Questions Data ---
-        // An array of 15 difficult questions about Lord Krishna in Hindi.
-        const quizQuestions = [
-            {
-                question: "भगवान कृष्ण के शंख का क्या नाम था, जिसे उन्होंने शंखासुर नामक राक्षस को मारकर प्राप्त किया था?",
-                options: [
-                    { text: "पांचजन्य", correct: true },
-                    { text: "देवदत्त", correct: false },
-                    { text: "सुघोष", correct: false },
-                    { text: "मणिपुष्पक", correct: false }
-                ]
-            },
-            {
-                question: "श्री कृष्ण और बलराम को 64 कलाओं का ज्ञान देने वाले गुरु का क्या नाम था?",
-                options: [
-                    { text: "द्रोणाचार्य", correct: false },
-                    { text: "कृपाचार्य", correct: false },
-                    { text: "सांदीपनि मुनि", correct: true },
-                    { text: "परशुराम", correct: false }
-                ]
-            },
-            {
-                question: "भगवान कृष्ण के उस दिव्य धनुष का क्या नाम था जो उन्हें वरुण देव से प्राप्त हुआ था?",
-                options: [
-                    { text: "पिनाक", correct: false },
-                    { text: "शारंग", correct: true },
-                    { text: "गाण्डीव", correct: false },
-                    { text: "विजय", correct: false }
-                ]
-            },
-            {
-                question: "उस एकमात्र कौरव का नाम बताइए जो महाभारत युद्ध में पांडवों की ओर से लड़ा था?",
-                options: [
-                    { text: "विकर्ण", correct: false },
-                    { text: "दुःशासन", correct: false },
-                    { text: "युयुत्सु", correct: true },
-                    { text: "चित्रसेन", correct: false }
-                ]
-            },
-            {
-                question: "भगवान कृष्ण की दिव्य तलवार का क्या नाम था?",
-                options: [
-                    { text: "चंद्रहास", correct: false },
-                    { text: "असि", correct: false },
-                    { text: "खड्ग", correct: false },
-                    { text: "नन्दक", correct: true }
-                ]
-            },
-            {
-                question: "महाभारत युद्ध में अर्जुन के अलावा, कृष्ण के अपने सारथी का क्या नाम था जो उनके रथ को द्वारका में चलाता था?",
-                options: [
-                    { text: "संजय", correct: false },
-                    { text: "सात्यकि", correct: false },
-                    { text: "दारुक", correct: true },
-                    { text: "कृतवर्मा", correct: false }
-                ]
-            },
-            {
-                question: "गांधारी ने यदु वंश के विनाश का श्राप कृष्ण को क्यों दिया था?",
-                options: [
-                    { text: "क्योंकि उन्होंने दुर्योधन को मार दिया था", correct: false },
-                    { text: "क्योंकि वे युद्ध रोक सकते थे, पर रोका नहीं", correct: true },
-                    { text: "क्योंकि उन्होंने कर्ण का वध करवाया", correct: false },
-                    { text: "क्योंकि उन्होंने शकुनि को धोखा दिया", correct: false }
-                ]
-            },
-            {
-                question: "उस शिकारी का क्या नाम था जिसके बाण से भगवान कृष्ण ने अपनी लीला समाप्त की?",
-                options: [
-                    { text: "अंगद", correct: false },
-                    { text: "जरा", correct: true },
-                    { text: "निषाद", correct: false },
-                    { text: "वालिया", correct: false }
-                ]
-            },
-            {
-                question: "भागवत पुराण राजा परीक्षित को किसने सुनाया था?",
-                options: [
-                    { text: "वेद व्यास", correct: false },
-                    { text: "नारद मुनि", correct: false },
-                    { text: "शुकदेव गोस्वामी", correct: true },
-                    { text: "लोमहर्षण", correct: false }
-                ]
-            },
-            {
-                question: "कृष्ण ने किस राक्षस का वध किया था जो बवंडर (चक्रवात) का रूप लेकर आया था?",
-                options: [
-                    { text: "बकासुर", correct: false },
-                    { text: "अघासुर", correct: false },
-                    { text: "पूतना", correct: false },
-                    { text: "तृणावर्त", correct: true }
-                ]
-            },
-            {
-                question: "भगवान कृष्ण द्वारा स्थापित भव्य शहर द्वारका को जलमग्न होने से पहले किसने श्राप दिया था?",
-                options: [
-                    { text: "दुर्वासा ऋषि", correct: true },
-                    { text: "गांधारी", correct: false },
-                    { text: "विश्वामित्र", correct: false },
-                    { text: "नारद मुनि", correct: false }
-                ]
-            },
-            {
-                question: "कृष्ण के पुत्र साम्ब ने किस ऋषि का अपमान किया था, जिसके कारण यदु वंश के विनाश की घटनाएँ शुरू हुईं?",
-                options: [
-                    { text: "कण्व", correct: false },
-                    { text: "विश्वामित्र", correct: false },
-                    { text: "दुर्वासा", correct: false },
-                    { text: "नारद और अन्य ऋषिगण", correct: true }
-                ]
-            },
-            {
-                question: "भगवान कृष्ण की अष्टभार्या (आठ प्रमुख रानियों) में से कौन विदर्भ की राजकुमारी थीं?",
-                options: [
-                    { text: "सत्यभामा", correct: false },
-                    { text: "रुक्मिणी", correct: true },
-                    { text: "जाम्बवती", correct: false },
-                    { text: "कालिंदी", correct: false }
-                ]
-            },
-            {
-                question: "कृष्ण ने नरकासुर का वध करके कितनी राजकुमारियों को उसकी कैद से मुक्त कराया था?",
-                options: [
-                    { text: "8,000", correct: false },
-                    { text: "12,000", correct: false },
-                    { text: "16,100", correct: true },
-                    { text: "1,008", correct: false }
-                ]
-            },
-            {
-                question: "महाभारत के अनुसार, कृष्ण की बहन सुभद्रा का विवाह अर्जुन से हुआ था। सुभद्रा किसकी पुत्री थीं?",
-                options: [
-                    { text: "देवकी", correct: false },
-                    { text: "रोहिणी", correct: false },
-                    { text: "वसुदेव की एक और पत्नी", correct: false },
-                    { text: "वसुदेव और देवकी", correct: true }
-                ]
-            }
-        ];
-
-        // --- DOM Elements ---
-        const questionArea = document.getElementById('question-area');
-        const resultArea = document.getElementById('result-area');
-        const questionCounterEl = document.getElementById('question-counter');
-        const scoreEl = document.getElementById('score');
-        const questionTextEl = document.getElementById('question-text');
-        const optionsContainerEl = document.getElementById('options-container');
-        const nextBtn = document.getElementById('next-btn');
-        
-        // --- State Variables ---
-        let currentQuestionIndex = 0;
-        let score = 0;
-        let shuffledQuestions = [];
-
-        // --- Functions ---
-
-        /**
-         * Starts the quiz by shuffling questions and showing the first one.
-         */
-        function startQuiz() {
-            // Shuffle the questions for a new experience each time
-            shuffledQuestions = quizQuestions.sort(() => Math.random() - 0.5);
-            currentQuestionIndex = 0;
-            score = 0;
-            resultArea.classList.add('hidden');
-            questionArea.classList.remove('hidden');
-            nextBtn.classList.add('hidden');
-            scoreEl.textContent = `स्कोर: 0`;
-            showQuestion();
-        }
-
-        /**
-         * Displays the current question and its options.
-         */
-        function showQuestion() {
-            resetState();
-            const currentQuestion = shuffledQuestions[currentQuestionIndex];
-            questionCounterEl.textContent = `प्रश्न ${currentQuestionIndex + 1}/${shuffledQuestions.length}`;
-            questionTextEl.textContent = currentQuestion.question;
-
-            // Create and append option buttons
-            currentQuestion.options.forEach(option => {
-                const button = document.createElement('button');
-                button.innerHTML = option.text;
-                button.classList.add('option-btn', 'w-full', 'p-4', 'border-2', 'border-white/50', 'rounded-lg', 'text-lg', 'hindi-font', 'bg-white/10');
-                button.dataset.correct = option.correct;
-                button.addEventListener('click', selectOption);
-                optionsContainerEl.appendChild(button);
-            });
-        }
-
-        /**
-         * Resets the state for the next question (clears options, hides next button).
-         */
-        function resetState() {
-            nextBtn.classList.add('hidden');
-            while (optionsContainerEl.firstChild) {
-                optionsContainerEl.removeChild(optionsContainerEl.firstChild);
-            }
-        }
-
-        /**
-         * Handles the user's selection of an option.
-         * @param {Event} e - The click event.
-         */
-        function selectOption(e) {
-            const selectedBtn = e.target;
-            const isCorrect = selectedBtn.dataset.correct === 'true';
-
-            if (isCorrect) {
-                score++;
-                scoreEl.textContent = `स्कोर: ${score}`;
-            }
-
-            // Provide visual feedback for all options
-            Array.from(optionsContainerEl.children).forEach(button => {
-                if (button.dataset.correct === 'true') {
-                    button.classList.add('correct');
-                } else {
-                    button.classList.add('incorrect');
-                }
-                button.disabled = true; // Disable all buttons after selection
-            });
-            
-            // Show the next button
-            if (shuffledQuestions.length > currentQuestionIndex + 1) {
-                nextBtn.classList.remove('hidden');
-            } else {
-                // If it's the last question, show the results
-                setTimeout(showResults, 1000); 
-            }
-        }
-        
-        /**
-         * Displays the final results of the quiz.
-         */
-        function showResults() {
-            questionArea.classList.add('hidden');
-            nextBtn.classList.add('hidden');
-            resultArea.classList.remove('hidden');
-            
-            const resultTitle = document.getElementById('result-title');
-            const resultText = document.getElementById('result-text');
-            const resultMessage = document.getElementById('result-message');
-
-            resultText.textContent = `आपने ${shuffledQuestions.length} में से ${score} प्रश्नों के सही उत्तर दिए।`;
-
-            if (score > 12) {
-                resultTitle.textContent = "अद्भुत! �👏👏";
-                resultMessage.textContent = "आपका ज्ञान वास्तव में असाधारण है। आप श्री कृष्ण के सच्चे भक्त हैं।";
-            } else if (score > 7) {
-                resultTitle.textContent = "बहुत अच्छा! 👍";
-                resultMessage.textContent = "आपका ज्ञान बहुत अच्छा है, लेकिन अभी भी जानने के लिए बहुत कुछ है।";
-            } else {
-                resultTitle.textContent = "प्रयास करते रहें! 🙏";
-                resultMessage.textContent = "यह एक कठिन प्रश्नोत्तरी थी। लीलाओं का अध्ययन जारी रखें, ज्ञान अवश्य बढ़ेगा।";
-            }
-        }
-        
-        /**
-         * Restarts the quiz from the beginning.
-         */
-        function restartQuiz() {
-            startQuiz();
-        }
-
-        // --- Event Listeners ---
-        nextBtn.addEventListener('click', () => {
-            currentQuestionIndex++;
-            showQuestion();
-        });
-
-        // --- Initial Call ---
-        // Start the quiz when the page loads.
-        document.addEventListener('DOMContentLoaded', startQuiz);
-
-    </script>
 </body>
 </html>
-�
+
